@@ -11,7 +11,19 @@ header {
     color: #000000; /* Black text */
     padding: 10px 0;
     text-align: center;
-    border-bottom: 1px solid #000000; /* Adds a black border at the bottom of the header */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3); /* Lighter black border */
+    position: relative;
+}
+
+header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 50%;
+    border-bottom: 1px solid #000000; /* Darker black border */
 }
 
 nav ul {
