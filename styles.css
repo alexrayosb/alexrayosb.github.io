@@ -18,8 +18,8 @@ header::after {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 12.5%; /* Center the line by offsetting it from the left */
-    width: 75%; /* Length of the line */
+    left: 10%; /* Center the line by offsetting it from the left */
+    width: 80%; /* Length of the line */
     border-bottom: 1px solid #000000; /* Black border */
 }
 
