@@ -2,14 +2,16 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    background-color: #ffffff; /* White background */
+    color: #000000; /* Black text */
 }
 
 header {
-    background-color: #333;
-    color: white;
+    background-color: #ffffff; /* White background */
+    color: #000000; /* Black text */
     padding: 10px 0;
     text-align: center;
+    border-bottom: 1px solid #000000; /* Adds a black border at the bottom of the header */
 }
 
 nav ul {
@@ -23,7 +25,7 @@ nav ul li {
 }
 
 nav ul li a {
-    color: white;
+    color: #000000; /* Black text */
     text-decoration: none;
 }
 
@@ -32,11 +34,5 @@ main {
 }
 
 footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #333;
-    color: white;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+    display: none; /* Hide the footer */
 }
