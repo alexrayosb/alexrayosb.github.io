@@ -45,3 +45,13 @@ main {
 footer {
     display: none; /* Hide the footer */
 }
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 600px; /* Reserve the space */
+    border: 1px solid #ddd;
+    margin-bottom: 20px; /* Space below the container */
+}
