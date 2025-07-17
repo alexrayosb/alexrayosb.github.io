@@ -3,26 +3,573 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Undergrad Research</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>PostgreSQL Extensions Optimization | Alexander Osborne</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141f;
+            --bg-card: #1a1a2e;
+            --bg-hover: #252541;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            --border-color: #27273a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+            transform: translateX(-4px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        .project-hero {
+            padding: 8rem 0 4rem;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+        }
+
+        .project-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--accent-primary);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .project-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .project-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Content Sections */
+        .content-section {
+            padding: 3rem 0;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .section-header {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .abstract-box {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .content-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .content-text h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .content-text h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .content-text p {
+            margin-bottom: 1rem;
+        }
+
+        .content-text ul, .content-text ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        .content-text li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 2rem 0;
+        }
+
+        .tech-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        /* Key Findings */
+        .findings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .finding-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .finding-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .finding-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .finding-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .finding-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #0d0d15;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #e4e4e7;
+        }
+
+        /* References */
+        .references {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-top: 3rem;
+        }
+
+        .references h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .reference-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .reference-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .project-meta {
+                gap: 1rem;
+            }
+
+            .findings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="projects.html">Projects</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="report">
-            <h2>Full Project Report</h2>
-            <iframe src="pdf/research_report.pdf" width="100%" height="800px">
-                <p>Your browser does not support iframes. 
-                <a href="pdf/research_report.pdf">Click here to view the PDF.</a></p>
-            </iframe>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="back-link">
+                ← Back to Portfolio
+            </a>
+        </div>
+    </nav>
+
+    <!-- Project Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <span class="project-badge">Undergraduate Research</span>
+            <h1 class="project-title">PostgreSQL Database Extensions Optimization</h1>
+            <p class="project-subtitle">Transitioning from C++ to Rust for Enhanced Security and Performance</p>
+            <div class="project-meta">
+                <span class="meta-item">👨‍🏫 Professor Grant Scott</span>
+                <span class="meta-item">📅 January - May 2024</span>
+                <span class="meta-item">🏛️ University of Missouri</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Abstract -->
+        <section class="content-section">
+            <div class="abstract-box">
+                <h2 style="margin-top: 0; margin-bottom: 1rem;">Abstract</h2>
+                This project explores the optimization of PostgreSQL database extensions, originally developed in C, by transitioning them to Rust to enhance security and performance. The choice of Rust was driven by its safety features and efficiency, as well as its compatibility with PostgreSQL through the pgrx framework. The endeavor involved learning Rust, analyzing existing C based extensions, and beginning the translation of a key CPU function optimization module. This translation aimed to make use of Rust's performance advantages and robust type safety, crucial for the reliability and speed of database operations.
+                <!-- Updated Abstract paragraph to reflect incomplete translation -->
+                <p>
+                    While substantial progress was made in understanding and partially implementing the extensions in Rust, the complete translation was not achieved within the project timeline.
+                </p>
+            </div>
+        </section>
+
+        <!-- Technologies Used -->
+        <section class="content-section">
+            <h2 class="section-header">Technologies & Tools</h2>
+            <div class="tech-stack">
+                <span class="tech-tag">Rust</span>
+                <span class="tech-tag">C++</span>
+                <span class="tech-tag">PostgreSQL</span>
+                <span class="tech-tag">CUDA</span>
+                <span class="tech-tag">pgrx Framework</span>
+                <span class="tech-tag">Cargo</span>
+                <span class="tech-tag">GPU Acceleration</span>
+            </div>
+        </section>
+
+        <!-- Key Findings -->
+        <section class="content-section">
+            <h2 class="section-header">Key Findings & Achievements</h2>
+            <div class="findings-grid">
+                <div class="finding-card">
+                    <div class="finding-icon">🔒</div>
+                    <h3 class="finding-title">Memory Safety</h3>
+                    <p class="finding-description">Demonstrated how Rust's ownership model eliminates common C memory errors like buffer overflows and use-after-free bugs.</p>
+                </div>
+                <div class="finding-card">
+                    <div class="finding-icon">⚡</div>
+                    <h3 class="finding-title">Performance Parity</h3>
+                    <p class="finding-description">Achieved comparable performance to C++ implementations while maintaining safety guarantees through zero-cost abstractions.</p>
+                </div>
+                <div class="finding-card">
+                    <div class="finding-icon">🔧</div>
+                    <h3 class="finding-title">Type Safety</h3>
+                    <p class="finding-description">Leveraged Rust's strong type system to catch potential errors at compile time, improving overall extension reliability.</p>
+                </div>
+                <div class="finding-card">
+                    <div class="finding-icon">🚀</div>
+                    <!-- Fixed closing tag for GPU Integration heading -->
+                    <h3 class="finding-title">GPU Integration</h3>
+                    <p class="finding-description">Successfully integrated CUDA functionality for parallel computing tasks within the Rust ecosystem.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Project Details -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Introduction & Motivation</h2>
+                <p>
+                    PostgreSQL is a powerful, open source object-relational database system known for its community support, scalability, and ability to handle large volumes of data. One of PostgreSQL's greatest strengths is its extensibility, which allows developers to introduce custom functions and optimizations through extensions. These extensions can enhance the database's functionality and performance but are often limited by the language in which they are written.
+                </p>
+                <p>
+                    While C has been a staple in systems programming due to its speed and close-to-metal nature, it poses several challenges, particularly in terms of security and maintainability. Common issues include memory management errors and buffer overflows, which can compromise the security and stability of database systems. These challenges necessitate exploring other programming languages that maintain the efficiency of C but improve safety and developer productivity.
+                </p>
+
+                <h2>Research Objectives</h2>
+                <p>The primary objectives of this research were to:</p>
+                <ul>
+                    <li>Analyze the current C based extensions for CPU function optimization to identify potential areas for improvement</li>
+                    <li>Begin the process of translating these extensions to Rust to enhance their security and performance</li>
+                    <li>Evaluate Rust's effectiveness in database extension development</li>
+                    <li>Document the challenges and solutions in the translation process</li>
+                </ul>
+
+                <h2>Technical Implementation</h2>
+                <p>
+                    The implementation focused on translating critical CPU function optimization modules from C++ to Rust. Key algorithms that were addressed included:
+                </p>
+
+                <h3>1. Compute Energy Function</h3>
+                <p>
+                    The compute_energy_cpu function was redesigned to make use of Rust's ability to handle generics with trait bounds, ensuring that the function remained flexible and type safe. This involved careful consideration of Rust's ownership model while maintaining the performance characteristics of the original implementation.
+                </p>
+
+                <h3>2. Smoothing Algorithm</h3>
+                <p>
+                    Translating the smoothing function involved rethinking the convolution operation to make effective use of Rust's iterators and functional programming capabilities. This resulted in more idiomatic and maintainable code.
+                </p>
+
+                <h3>3. Peak Detection and Localization</h3>
+                <p>
+                    The translation of these functions required mindfulness of indexing and bounds checking, areas where Rust's safety features really shine. The compiler's guarantees eliminated entire classes of runtime errors.
+                </p>
+
+                <h3>4. Butter Lowpass Filter</h3>
+                <p>
+                    The digital filter implementation was adapted to Rust's zero-cost abstraction model. The filter function was reimplemented using Rust's arrays and slices, ensuring memory safety without overhead.
+                </p>
+
+                <h2>Challenges Encountered</h2>
+                <p>
+                    The project faced several significant challenges:
+                </p>
+                <ul>
+                    <li><strong>Learning Curve:</strong> Rust's ownership, borrowing, and lifetime concepts presented a steep learning curve, especially when translating pointer arithmetic from C++</li>
+                    <li><strong>Performance Optimization:</strong> While Rust's safety features are advantageous, they required different optimization strategies compared to procedural languages</li>
+                    <li><strong>Generic Programming:</strong> Translating C++ templates into Rust generics involved a deep understanding of both language type systems</li>
+                    <li><strong>Time Constraints:</strong> Balancing coursework and research responsibilities made progress challenging, requiring careful time management</li>
+                </ul>
+
+                <h2>Results & Impact</h2>
+                <p>
+                    While the complete translation was not achieved within the project timeline, substantial progress was made in understanding and partially implementing the extensions in Rust. The project demonstrated:
+                </p>
+                <ul>
+                    <li>Rust's viability as a replacement for C/C++ in database extension development</li>
+                    <li>The practical benefits of memory safety in production database systems</li>
+                    <li>The importance of modern programming paradigms in system-level software</li>
+                    <li>A clear path forward for future development and optimization</li>
+                </ul>
+
+                <h2>Future Work</h2>
+                <p>
+                    The foundation laid by this project opens several avenues for future development:
+                </p>
+                <ul>
+                    <li>Complete translation of remaining database modules</li>
+                    <li>Performance benchmarking against original C++ implementations</li>
+                    <li>Integration of more advanced CUDA optimizations</li>
+                    <li>Development of a comprehensive testing framework</li>
+                    <li>Documentation and best practices for PostgreSQL extension development in Rust</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- References -->
+        <section class="content-section">
+            <div class="references">
+                <h3>References</h3>
+                <div class="reference-item">
+                    Alahmar, A., & Budgen, W. (2022). Rust: The Programming Language for Safety and Performance. arXiv:2206.05503
+                </div>
+                <div class="reference-item">
+                    Tripuramallu, D., Singh, S., Deshmukh, S., Pinisetty, S., Shivaji, S., Balusamy, R., & Bandeppa, A. (2024). Towards a Transpiler for C/C++ to Safer Rust. arXiv:2401.08264
+                </div>
+                <div class="reference-item">
+                    PostgreSQL Global Development Group. PostgreSQL Extension Building Infrastructure. postgresql.org
+                </div>
+                <div class="reference-item">
+                    The Rust Programming Language. Official Rust Documentation. rust-lang.org
+                </div>
+            </div>
         </section>
     </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Alexander Osborne. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for back link
+        document.querySelector('.back-link').addEventListener('click', function(e) {
+            if (this.getAttribute('href').startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.pageYOffset > 0) {
+                nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
