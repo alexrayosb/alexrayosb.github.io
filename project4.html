@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoCreate Platform | Alexander Osborne</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141f;
+            --bg-card: #1a1a2e;
+            --bg-hover: #252541;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            --border-color: #27273a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+            transform: translateX(-4px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        .project-hero {
+            padding: 8rem 0 4rem;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(245, 158, 11, 0.1) 0%, transparent 100%);
+        }
+
+        .project-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--warning);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .project-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .project-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Content Sections */
+        .content-section {
+            padding: 3rem 0;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .section-header {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Abstract Box */
+        .abstract-box {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 2rem 0;
+        }
+
+        .tech-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--warning);
+            font-weight: 500;
+        }
+
+        /* Achievement Cards */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .achievement-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--warning);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .achievement-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #f59e0b 0%, #3b82f6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .achievement-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .achievement-description {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #0d0d15;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .code-label {
+            display: inline-block;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #e4e4e7;
+        }
+
+        /* System Architecture */
+        .architecture-diagram {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .architecture-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Feature List */
+        .feature-list {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #f59e0b 0%, #3b82f6 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .feature-content h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .feature-content p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Content Text */
+        .content-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .content-text h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .content-text h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .content-text ul {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        .content-text li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .team-member {
+            text-align: center;
+        }
+
+        .team-member h4 {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .team-member p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Insight Cards */
+        .insight-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #f59e0b 0%, #3b82f6 100%);
+        }
+
+        .insight-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .insight-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .project-meta {
+                gap: 1rem;
+            }
+
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="back-link">
+                ← Back to Portfolio
+            </a>
+        </div>
+    </nav>
+
+    <!-- Project Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <span class="project-badge">Full-Stack Development</span>
+            <h1 class="project-title">CoCreate Platform</h1>
+            <p class="project-subtitle">Version Control System for Creative Collaboration</p>
+            <div class="project-meta">
+                <span class="meta-item">👥 5-Person Team</span>
+                <span class="meta-item">📅 Aug 2024 - Present</span>
+                <span class="meta-item">🎓 Capstone Project</span>
+                <span class="meta-item">🏆 Database Lead</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Abstract -->
+        <section class="content-section">
+            <div class="abstract-box">
+                <h2 style="margin-top: 0; margin-bottom: 1rem;">Project Overview</h2>
+                CoCreate is an innovative platform that brings version control to creative collaboration, inspired by GitHub but designed specifically for artists, writers, and creators. As the Database Storage Coordinator, I led the backend architecture design and implementation, creating a robust dual-database system that manages user data and creative content with comprehensive version control capabilities. The platform empowers creators to collaborate on literature, digital art, and music projects while maintaining clear attribution and licensing—addressing critical concerns around AI training data and creative ownership.
+                <p style="margin-top: 1rem;">
+                    <strong>My Role:</strong> Led database architecture, designed PostgreSQL schemas, implemented REST API endpoints, and deployed containerized development environment using Docker.
+                </p>
+            </div>
+        </section>
+
+        <!-- Technologies -->
+        <section class="content-section">
+            <h2 class="section-header">Technologies & Architecture</h2>
+            <div class="tech-stack">
+                <span class="tech-tag">PostgreSQL</span>
+                <span class="tech-tag">Docker</span>
+                <span class="tech-tag">REST API</span>
+                <span class="tech-tag">Rust</span>
+                <span class="tech-tag">Git/libgit2</span>
+                <span class="tech-tag">AWS S3</span>
+                <span class="tech-tag">Argon2id</span>
+                <span class="tech-tag">OAuth</span>
+                <span class="tech-tag">React</span>
+            </div>
+        </section>
+
+        <!-- Key Achievements -->
+        <section class="content-section">
+            <h2 class="section-header">Technical Achievements</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <div class="achievement-icon">🗄️</div>
+                    <h3 class="achievement-title">Dual-Database Architecture</h3>
+                    <p class="achievement-description">Designed and implemented separate databases for user management and file storage, optimizing for both relational integrity and scalable content storage.</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🔐</div>
+                    <h3 class="achievement-title">Secure Authentication</h3>
+                    <p class="achievement-description">Implemented secure user authentication using Argon2id hashing, session management, and prepared groundwork for OAuth integration.</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🚀</div>
+                    <h3 class="achievement-title">Containerized Development</h3>
+                    <p class="achievement-description">Utilized Docker to create isolated development environments, enabling seamless team collaboration without server infrastructure.</p>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon">🔄</div>
+                    <h3 class="achievement-title">Version Control Integration</h3>
+                    <p class="achievement-description">Designed database schemas to support Git-like version control for creative projects, including branching, merging, and attribution tracking.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Database Design -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Database Architecture</h2>
+                <p>
+                    I designed a comprehensive dual-database system that elegantly separates user management from content storage, 
+                    enabling independent scaling and optimization for each domain.
+                </p>
+            </div>
+
+            <div class="code-block">
+                <span class="code-label">User Database Schema</span>
+                <pre><code>-- Core user management with secure authentication
+CREATE TABLE users (
+    user_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    hashed_password TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP WITH TIME ZONE,
+    is_active BOOLEAN DEFAULT TRUE,
+    oauth_providers TEXT[]
+);
+
+-- Extended user profiles for collaboration
+CREATE TABLE user_profiles (
+    profile_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+    display_name VARCHAR(100),
+    bio TEXT,
+    skills TEXT[],
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Project collaboration management
+CREATE TABLE project_members (
+    member_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(user_id) ON DELETE CASCADE,
+    project_id UUID NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    joined_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+            </div>
+
+            <div class="code-block">
+                <span class="code-label">File Database Schema</span>
+                <pre><code>-- Project management with version control
+CREATE TABLE projects (
+    project_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    creator_id UUID REFERENCES users(user_id),
+    visibility VARCHAR(50) NOT NULL,
+    tags TEXT[]
+);
+
+-- Version control metadata
+CREATE TABLE project_versions (
+    version_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    project_id UUID REFERENCES projects(project_id) ON DELETE CASCADE,
+    version_hash TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    creator_id UUID REFERENCES users(user_id),
+    commit_message TEXT
+);</code></pre>
+            </div>
+        </section>
+
+        <!-- Implementation Details -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Technical Implementation</h2>
+                
+                <h3>API Development</h3>
+                <p>
+                    Developed RESTful API endpoints for user management and project operations, ensuring clean separation 
+                    of concerns and maintainable code architecture. The API handles user registration, authentication, 
+                    profile management, and project collaboration features.
+                </p>
+
+                <h3>Security Implementation</h3>
+                <p>
+                    Implemented industry-standard security practices including:
+                </p>
+                <ul>
+                    <li>Argon2id password hashing for secure credential storage</li>
+                    <li>Session token management with expiration handling</li>
+                    <li>Prepared statements to prevent SQL injection</li>
+                    <li>Row-level security policies for data access control</li>
+                </ul>
+
+                <h3>Docker Containerization</h3>
+                <p>
+                    Created a fully containerized development environment that includes:
+                </p>
+                <ul>
+                    <li>PostgreSQL database with automated schema initialization</li>
+                    <li>API server with hot-reload for rapid development</li>
+                    <li>Isolated networking for security</li>
+                    <li>Volume mapping for persistent data storage</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Demo Features -->
+        <section class="content-section">
+            <h2 class="section-header">Demonstrated Features</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-content">
+                        <h4>User Registration System</h4>
+                        <p>Successfully demonstrated live user registration with secure password hashing and immediate database persistence.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-content">
+                        <h4>Profile Management</h4>
+                        <p>Implemented real-time profile editing with changes reflected instantly in both the UI and database.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-content">
+                        <h4>Database Operations</h4>
+                        <p>Showcased live database queries and updates, demonstrating the robustness of the backend architecture.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <div class="feature-content">
+                        <h4>Version Control Foundation</h4>
+                        <p>Established database schemas and API endpoints to support Git-like version control for creative projects.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team & Collaboration -->
+        <section class="content-section">
+            <h2 class="section-header">Team Collaboration</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <h4>Alex Osborne</h4>
+                    <p>Database & API Lead</p>
+                </div>
+                <div class="team-member">
+                    <h4>Ting-Ting Yao</h4>
+                    <p>UI Designer</p>
+                </div>
+                <div class="team-member">
+                    <h4>Wen-Hsin Chen</h4>
+                    <p>VCS Integrator</p>
+                </div>
+                <div class="team-member">
+                    <h4>Malynda Holt</h4>
+                    <p>Authentication Expert</p>
+                </div>
+                <div class="team-member">
+                    <h4>Alec Chang</h4>
+                    <p>Data Management</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Challenges & Solutions -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Challenges & Solutions</h2>
+                
+                <h3>Integration Complexity</h3>
+                <p>
+                    The biggest challenge was integrating multiple components developed independently by team members. 
+                    I addressed this by:
+                </p>
+                <ul>
+                    <li>Establishing clear API contracts early in development</li>
+                    <li>Creating comprehensive documentation for database operations</li>
+                    <li>Implementing Docker containers to ensure consistent development environments</li>
+                    <li>Leading integration sessions to resolve cross-component issues</li>
+                </ul>
+
+                <h3>Team Coordination</h3>
+                <p>
+                    With team members having to handle personal matters (including international travel), maintaining 
+                    project momentum was challenging. We adapted by implementing asynchronous collaboration tools and 
+                    detailed documentation practices.
+                </p>
+            </div>
+        </section>
+
+        <!-- Impact & Future -->
+        <section class="content-section">
+            <div class="insight-card">
+                <h3 class="insight-title">🎯 Project Impact</h3>
+                <p class="insight-description">
+                    CoCreate addresses a critical gap in the creative industry by providing transparent version control 
+                    and attribution tracking. With the rise of AI training on creative works, our platform ensures 
+                    creators maintain control over their intellectual property while enabling collaboration. The 
+                    successful demonstration of core features proves the viability of bringing software development 
+                    practices to creative fields.
+                </p>
+            </div>
+
+            <div class="insight-card">
+                <h3 class="insight-title">🚀 Future Development</h3>
+                <p class="insight-description">
+                    The team plans to continue development beyond the capstone course. Future enhancements include:
+                    implementing full OAuth integration, adding support for audio and video content, developing 
+                    advanced merge conflict resolution for creative works, and creating a recommendation system 
+                    for collaborative matching. My database architecture was designed with these expansions in mind, 
+                    ensuring scalability for future features.
+                </p>
+            </div>
+        </section>
+
+        <!-- Technical Skills Demonstrated -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Skills & Technologies Demonstrated</h2>
+                <ul>
+                    <li><strong>Database Design:</strong> Created normalized schemas with referential integrity and optimized indexing strategies</li>
+                    <li><strong>API Development:</strong> Built RESTful endpoints with proper error handling and validation</li>
+                    <li><strong>Security Implementation:</strong> Implemented modern authentication practices and data protection</li>
+                    <li><strong>DevOps:</strong> Containerized applications for consistent deployment and development</li>
+                    <li><strong>Team Leadership:</strong> Led backend development and coordinated integration efforts</li>
+                    <li><strong>Documentation:</strong> Created comprehensive technical documentation for team reference</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Alexander Osborne. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for back link
+        document.querySelector('.back-link').addEventListener('click', function(e) {
+            if (this.getAttribute('href').startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.pageYOffset > 0) {
+                nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

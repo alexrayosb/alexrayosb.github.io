@@ -617,6 +617,24 @@
                 gap: 1rem;
             }
         }
+
+        #invis-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        #placeholder {
+            visibility: hidden;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        #typewriter {
+            position: absolute;
+            top: 0;
+            left: 0;
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
@@ -645,7 +663,12 @@
         <div class="container">
             <div class="hero-content">
                 <span class="hero-tag">Welcome to my portfolio</span>
-                <h1>Hi, I'm <span>Alexander Osborne</span></h1>
+                <h1>
+                    Hi, I'm <span id="invis-container">
+                        <span id="placeholder">Alexander Osborne</span>
+                        <span id="typewriter"></span>
+                    </span>
+                </h1>
                 <p class="hero-subtitle">Data Engineer & Software Developer</p>
                 <p class="hero-description">
                     Passionate about solving complex data challenges through innovative engineering solutions. 
@@ -684,7 +707,7 @@
                 </div>
                 <div class="about-stats">
                     <div class="stat-card">
-                        <div class="stat-number">3+</div>
+                        <div class="stat-number">4+</div>
                         <div class="stat-label">Major Projects</div>
                     </div>
                     <div class="stat-card">
@@ -722,6 +745,9 @@
                         <span class="skill-tag">Java</span>
                         <span class="skill-tag">SQL</span>
                         <span class="skill-tag">JavaScript</span>
+                        <span class="skill-tag">Swift</span>
+                        <span class="skill-tag">Assembly</span>
+                        <span class="skill-tag">HTML/CSS</span>
                     </div>
                 </div>
                 <div class="skill-category">
@@ -732,6 +758,8 @@
                     <div class="skills-list">
                         <span class="skill-tag">PostgreSQL</span>
                         <span class="skill-tag">MySQL</span>
+                        <span class="skill-tag">SQLPad</span>
+                        <span class="skill-tag">MySQL Workbench</span>
                         <span class="skill-tag">Pandas</span>
                         <span class="skill-tag">NumPy</span>
                         <span class="skill-tag">Tableau</span>
@@ -746,10 +774,12 @@
                     <div class="skills-list">
                         <span class="skill-tag">Docker</span>
                         <span class="skill-tag">Git/GitHub</span>
-                        <span class="skill-tag">Jupyter</span>
                         <span class="skill-tag">Linux</span>
+                        <span class="skill-tag">Jupyter</span>
+                        <span class="skill-tag">Cargo</span>
                         <span class="skill-tag">CUDA</span>
                         <span class="skill-tag">Machine Learning</span>
+                        <span class="skill-tag">pgrx Framework</span>
                     </div>
                 </div>
             </div>
@@ -807,7 +837,7 @@
                             <span class="tech-tag">Python</span>
                             <span class="tech-tag">Machine Learning</span>
                             <span class="tech-tag">Pandas</span>
-                            <span class="tech-tag">Scikit-learn</span>
+                            <span class="tech-tag">Kaggle</span>
                         </div>
                     </div>
                     <p class="project-description">
@@ -816,6 +846,25 @@
                         to capture holistic wellness indicators.
                     </p>
                     <a href="project3.html" class="project-link">
+                        View Details →
+                    </a>
+                </div>
+                <div class="project-card">
+                    <div class="project-header">
+                        <h3 class="project-title">CoCreate Platform</h3>
+                        <div class="project-tech">
+                            <span class="tech-tag">PostgreSQL</span>
+                            <span class="tech-tag">Docker</span>
+                            <span class="tech-tag">API Design</span>
+                            <span class="tech-tag">Version Control</span>
+                        </div>
+                    </div>
+                    <p class="project-description">
+                        Leading database architecture for a collaborative creative platform. Designed and implemented 
+                        PostgreSQL schemas for version control, user management, and file storage. Utilized Docker 
+                        containers for seamless development and deployed API connections without dedicated server infrastructure.
+                    </p>
+                    <a href="project4.html" class="project-link">
                         View Details →
                     </a>
                 </div>
@@ -837,7 +886,7 @@
                     <span class="education-date">May 2025</span>
                 </div>
                 <div class="education-details">
-                    <p>GPA: 3.38 / 4.0</p>
+                    <p>GPA: 3.38</p>
                     <p>Relevant Coursework: Algorithm Design, Database Systems, Machine Learning, Object-Oriented Programming</p>
                 </div>
             </div>
@@ -846,6 +895,28 @@
                     <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/badge/108916328" 
                          alt="SQL Certification Badge" 
                          title="SQL Certification">
+                </div>
+                <div class="certificate-badge">
+                    <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/badge/112646541" 
+                         alt="Python Certification Badge" 
+                         title="Python Certification">
+                </div>
+                <div class="certificate-badge">
+                    <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/badge/111921966" 
+                         alt="Intercultural Certification Badge" 
+                         title="Intercultural Certification">
+                </div>
+            </div>
+            <div class="certificate-section">
+                <div class="certificate-badge">
+                    <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/112751860" 
+                         alt="Intel Project Badge" 
+                         title="Intel Project Certification">
+                </div>
+                <div class="certificate-badge">
+                    <img src="https://api.accredible.com/v1/frontend/credential_website_embed_image/certificate/112665679" 
+                         alt="GRAMMYs Project Badge" 
+                         title="GRAMMYs Project Certification">
                 </div>
             </div>
         </div>
@@ -960,8 +1031,8 @@
         });
 
         // Typing effect for hero title
-        const heroTitle = document.querySelector('.hero h1 span');
-        const text = heroTitle.textContent;
+        const heroTitle = document.getElementById('typewriter');
+        const text = 'Alexander Osborne';
         heroTitle.textContent = '';
         let i = 0;
 
