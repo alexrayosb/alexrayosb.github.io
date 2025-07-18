@@ -3,26 +3,704 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intel Project</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Intel Data Center Analysis | Alexander Osborne</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141f;
+            --bg-card: #1a1a2e;
+            --bg-hover: #252541;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            --border-color: #27273a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+            transform: translateX(-4px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        .project-hero {
+            padding: 8rem 0 4rem;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(16, 185, 129, 0.1) 0%, transparent 100%);
+        }
+
+        .project-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--success);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .project-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .project-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Content Sections */
+        .content-section {
+            padding: 3rem 0;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .section-header {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Key Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--success);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.5rem;
+        }
+
+        /* SQL Code Blocks */
+        .sql-block {
+            background: #0d0d15;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .sql-label {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .sql-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #e4e4e7;
+        }
+
+        .sql-keyword {
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .sql-function {
+            color: #10b981;
+        }
+
+        .sql-string {
+            color: #f59e0b;
+        }
+
+        /* Data Insights */
+        .insight-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+        }
+
+        .insight-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .insight-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Visualization Preview */
+        .viz-preview {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .viz-preview img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .viz-caption {
+            margin-top: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 2rem 0;
+        }
+
+        .tech-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        /* Recommendation Box */
+        .recommendation-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .recommendation-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Content Text */
+        .content-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .content-text h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .content-text h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .project-meta {
+                gap: 1rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="projects.html">Projects</a></li>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="back-link">
+                ← Back to Portfolio
+            </a>
+        </div>
+    </nav>
+
+    <!-- Project Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <span class="project-badge">Sustainability Analytics</span>
+            <h1 class="project-title">Intel Data Center Location Analysis</h1>
+            <p class="project-subtitle">Optimizing Site Selection Through Energy & Sustainability Data</p>
+            <div class="project-meta">
+                <span class="meta-item">🏢 Intel Sustainability Team</span>
+                <span class="meta-item">📅 July 2024</span>
+                <span class="meta-item">🎓 University Partnership</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Overview -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Project Overview</h2>
+                <p>
+                    In collaboration with Intel's Sustainability Team, I conducted a comprehensive data analysis to identify the optimal location for Intel's next data center. The project focused on analyzing energy availability, renewable energy sources, and regional power generation capabilities across the United States to make data-driven recommendations that align with Intel's sustainability goals.
+                </p>
+            </div>
+        </section>
+
+        <!-- Key Metrics -->
+        <section class="content-section">
+            <h2 class="section-header">Key Performance Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">3</div>
+                    <div class="metric-label">Datasets Analyzed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">20+</div>
+                    <div class="metric-label">SQL Queries Written</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">12</div>
+                    <div class="metric-label">US Regions Evaluated</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">2</div>
+                    <div class="metric-label">Top Recommendations</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technologies -->
+        <section class="content-section">
+            <h2 class="section-header">Technologies & Tools</h2>
+            <div class="tech-stack">
+                <span class="tech-tag">PostgreSQL</span>
+                <span class="tech-tag">Advanced SQL</span>
+                <span class="tech-tag">Tableau</span>
+                <span class="tech-tag">Data Visualization</span>
+                <span class="tech-tag">Energy Analytics</span>
+                <span class="tech-tag">SQLPad</span>
+            </div>
+        </section>
+
+        <!-- Analysis Process -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Data Analysis Process</h2>
+                <p>
+                    The analysis involved working with three comprehensive datasets containing information about daily energy production, consumption patterns, and power plant specifications across different US regions.
+                </p>
+
+                <h3>1. Net Energy Production Analysis</h3>
+                <p>
+                    First, I identified regions that are net energy producers by calculating the difference between energy generation and demand:
+                </p>
+            </div>
+
+            <div class="sql-block">
+                <span class="sql-label">SQL Query</span>
+                <pre><code><span class="sql-keyword">SELECT</span>
+    region,
+    <span class="sql-function">SUM</span>(net_generation) <span class="sql-keyword">AS</span> energy_generated,
+    <span class="sql-function">SUM</span>(demand) <span class="sql-keyword">AS</span> energy_used,
+    <span class="sql-function">SUM</span>(net_generation - demand) <span class="sql-keyword">AS</span> total_energy
+<span class="sql-keyword">FROM</span>
+    intel.energy_data
+<span class="sql-keyword">GROUP BY</span>
+    region
+<span class="sql-keyword">ORDER BY</span>
+    total_energy <span class="sql-keyword">DESC</span></code></pre>
+            </div>
+
+            <div class="insight-card">
+                <h3 class="insight-title">💡 Key Insight</h3>
+                <p class="insight-description">
+                    The Mid-Atlantic region emerged as the highest net energy producer with 31,693,087 Megawatts, 
+                    indicating significant energy surplus available for data center operations.
+                </p>
+            </div>
+
+            <div class="content-text">
+                <h3>2. Renewable Energy Assessment</h3>
+                <p>
+                    Next, I analyzed renewable energy generation capacity, focusing on hydropower, wind, and solar sources:
+                </p>
+            </div>
+
+            <div class="sql-block">
+                <span class="sql-label">SQL Query</span>
+                <pre><code><span class="sql-keyword">SELECT</span>
+    region,
+    (<span class="sql-function">SUM</span>(hydropower_and_pumped_storage + wind + solar) / 
+     <span class="sql-function">SUM</span>(net_generation)) * 100 <span class="sql-keyword">AS</span> percent_renewable
+<span class="sql-keyword">FROM</span>
+    intel.energy_data
+<span class="sql-keyword">GROUP BY</span>
+    region
+<span class="sql-keyword">ORDER BY</span>
+    percent_renewable <span class="sql-keyword">DESC</span></code></pre>
+            </div>
+
+            <div class="insight-card">
+                <h3 class="insight-title">🌱 Sustainability Finding</h3>
+                <p class="insight-description">
+                    The Northwest region leads in renewable energy percentage, while California demonstrates 
+                    37.5% renewable energy usage, showcasing strong sustainability potential for both regions.
+                </p>
+            </div>
+
+            <div class="content-text">
+                <h3>3. Power Plant Infrastructure Analysis</h3>
+                <p>
+                    I performed a detailed analysis of power plant infrastructure, joining multiple datasets to evaluate
+                    renewable energy capacity at the plant level:
+                </p>
+            </div>
+
+            <div class="sql-block">
+                <span class="sql-label">SQL Query</span>
+                <!-- Updated energy_type filter to 'renewable energy' to match intel_project.txt -->
+                <pre><code><span class="sql-keyword">WITH</span> ppe <span class="sql-keyword">AS</span> (
+    <span class="sql-keyword">SELECT</span> *
+    <span class="sql-keyword">FROM</span> intel.power_plants <span class="sql-keyword">AS</span> p
+    <span class="sql-keyword">INNER JOIN</span> intel.energy_by_plant <span class="sql-keyword">AS</span> e
+    <span class="sql-keyword">ON</span> p.plant_code = e.plant_code
+)
+<span class="sql-keyword">SELECT</span>
+    region,
+    <span class="sql-function">COUNT</span>(*) <span class="sql-keyword">AS</span> renewable_energy_plants
+<span class="sql-keyword">FROM</span> ppe
+<span class="sql-keyword">WHERE</span> energy_type <span class="sql-keyword">LIKE</span> <span class="sql-string">'renewable_energy'</span>
+<span class="sql-keyword">GROUP BY</span> region
+<span class="sql-keyword">ORDER BY</span> renewable_energy_plants <span class="sql-keyword">DESC</span></code></pre>
+            </div>
+        </section>
+
+        <!-- Key Findings -->
+        <section class="content-section">
+            <h2 class="section-header">Data-Driven Insights</h2>
+            
+            <div class="insight-card">
+                <h3 class="insight-title">Regional Energy Patterns</h3>
+                <p class="insight-description">
+                    Analysis revealed that renewable energy generation follows distinct hourly patterns. The Northwest 
+                    region maintains consistent renewable generation throughout the day, while California shows peak 
+                    solar generation during midday hours.
+                </p>
+            </div>
+
+            <div class="insight-card">
+                <h3 class="insight-title">Infrastructure Efficiency</h3>
+                <p class="insight-description">
+                    Solar photovoltaic analysis showed that while the Midwest has the most renewable plants (234), 
+                    California's plants are 3x more efficient, producing significantly more energy per facility.
+                </p>
+            </div>
+
+            <div class="insight-card">
+                <h3 class="insight-title">Sustainability Metrics</h3>
+                <p class="insight-description">
+                    The Northwest and Central regions emerged as leaders in both net positive energy generation 
+                    and high renewable energy percentages, making them ideal candidates for sustainable data center operations.
+                </p>
+            </div>
+        </section>
+
+        <!-- Visualizations -->
+        <section class="content-section">
+            <h2 class="section-header">Data Visualizations</h2>
+            <p class="content-text">
+                Created comprehensive Tableau dashboards to communicate findings to Intel's leadership team, 
+                featuring interactive visualizations of:
+            </p>
+            <ul style="color: var(--text-secondary); margin-left: 2rem; line-height: 2;">
+                <li>Net energy production by region</li>
+                <li>Renewable energy percentage rankings</li>
+                <li>Time-series analysis of energy generation patterns</li>
+                <li>State-level energy infrastructure comparisons</li>
             </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="report">
-            <h2>Full Project</h2>
-            <iframe src="pdf/intel_project.pdf" width="100%" height="800px">
-                <p>Your browser does not support iframes. 
-                <a href="pdf/intel_project.pdf">Click here to view the PDF.</a></p>
-            </iframe>
+        </section>
+
+        <!-- Final Recommendation -->
+        <section class="content-section">
+            <div class="recommendation-box">
+                <h3>Final Recommendation</h3>
+                <p style="font-size: 1.125rem; line-height: 1.8;">
+                    Based on comprehensive data analysis, <strong>Washington State</strong> emerged as the optimal location 
+                    for Intel's new data center, with <strong>Oklahoma</strong> as a strong secondary option. 
+                    These recommendations consider energy surplus, renewable energy availability, and regional infrastructure capacity.
+                </p>
+            </div>
+        </section>
+
+        <!-- Project Impact -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Project Impact & Learning Outcomes</h2>
+                <p>
+                    This project provided valuable experience in:
+                </p>
+                <ul style="margin-left: 2rem; line-height: 2;">
+                    <li>Conducting enterprise-level data analysis for strategic decision-making</li>
+                    <li>Writing complex SQL queries to extract actionable insights from large datasets</li>
+                    <li>Creating compelling data visualizations that communicate technical findings to stakeholders</li>
+                    <li>Understanding the intersection of technology infrastructure and sustainability</li>
+                    <li>Collaborating with industry professionals on real-world business challenges</li>
+                </ul>
+            </div>
         </section>
     </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Alexander Osborne. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for back link
+        document.querySelector('.back-link').addEventListener('click', function(e) {
+            if (this.getAttribute('href').startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.pageYOffset > 0) {
+                nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
+
+        // Animate metrics on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const metrics = entry.target.querySelectorAll('.metric-value');
+                    metrics.forEach(metric => {
+                        const value = metric.textContent;
+                        metric.style.opacity = '0';
+                        setTimeout(() => {
+                            metric.style.opacity = '1';
+                            metric.style.transform = 'scale(1.1)';
+                            setTimeout(() => {
+                                metric.style.transform = 'scale(1)';
+                            }, 200);
+                        }, 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.metrics-grid').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>

@@ -3,26 +3,878 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Machine Learning Project</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Student Performance ML Predictor | Alexander Osborne</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #14141f;
+            --bg-card: #1a1a2e;
+            --bg-hover: #252541;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent-primary: #3b82f6;
+            --accent-secondary: #06b6d4;
+            --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            --border-color: #27273a;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 40px rgba(59, 130, 246, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(239, 68, 68, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+            transform: translateX(-4px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Hero Section */
+        .project-hero {
+            padding: 8rem 0 4rem;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(239, 68, 68, 0.1) 0%, transparent 100%);
+        }
+
+        .project-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--error);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .project-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .project-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Content Sections */
+        .content-section {
+            padding: 3rem 0;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+
+        .section-header {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Abstract Box */
+        .abstract-box {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        /* Model Performance Cards */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .model-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .model-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .model-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .model-metrics {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .metric-value.negative {
+            color: var(--error);
+        }
+
+        .metric-value.positive {
+            color: var(--success);
+        }
+
+        /* Feature Importance Chart */
+        .chart-container {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Feature bars */
+        .feature-bar {
+            margin-bottom: 1rem;
+        }
+
+        .feature-name {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .feature-progress {
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .feature-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 4px;
+            transition: width 1s ease-out;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 2rem 0;
+        }
+
+        .tech-tag {
+            padding: 0.5rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--error);
+            font-weight: 500;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: #0d0d15;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .code-label {
+            display: inline-block;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: #e4e4e7;
+        }
+
+        /* Key Insights */
+        .insight-card {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+        }
+
+        .insight-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .insight-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Content Text */
+        .content-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .content-text h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .content-text h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 1.5rem 0 1rem;
+            color: var(--text-primary);
+        }
+
+        .content-text ul {
+            margin: 1rem 0 1rem 2rem;
+        }
+
+        .content-text li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* Dataset Info */
+        .dataset-info {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin: 2rem 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .dataset-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .dataset-number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ef4444 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dataset-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 5rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .project-meta {
+                gap: 1rem;
+            }
+
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dataset-info {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="projects.html">Projects</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="report">
-            <h2>Full Project Report</h2>
-            <iframe src="pdf/ml_report.pdf" width="100%" height="800px">
-                <p>Your browser does not support iframes. 
-                <a href="pdf/ml_report.pdf">Click here to view the PDF.</a></p>
-            </iframe>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="back-link">
+                ← Back to Portfolio
+            </a>
+        </div>
+    </nav>
+
+    <!-- Project Hero -->
+    <section class="project-hero">
+        <div class="container">
+            <span class="project-badge">Machine Learning Research</span>
+            <h1 class="project-title">Student Performance Prediction</h1>
+            <p class="project-subtitle">Using Mental Health & Lifestyle Factors to Predict Academic Success</p>
+            <div class="project-meta">
+                <span class="meta-item">👥 Malynda Holt (Co-author)</span>
+                <span class="meta-item">📅 April 2025</span>
+                <span class="meta-item">🏛️ University of Missouri</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Abstract -->
+        <section class="content-section">
+            <div class="abstract-box">
+                <h2 style="margin-top: 0; margin-bottom: 1rem;">Abstract</h2>
+                We investigate the feasibility of predicting student academic performance (GPA) using mental health and lifestyle factors, with the goal of identifying key predictors and enabling early intervention strategies. Using a dataset of 760 students comprising 20 features, we engineered composite indicators such as a Stress Index, Wellness Score, and Academic-Social Imbalance to capture latent patterns in the data. Our baseline models—including Linear Regression, Random Forest, and Gradient Boosting—exhibited poor generalization, with test R² values below zero and high mean absolute errors. While overall predictive accuracy remained limited, the study reveals meaningful correlations between mental health metrics and GPA, offering insights for developing targeted educational support frameworks.
+            </div>
+        </section>
+
+        <!-- Dataset Overview -->
+        <section class="content-section">
+            <h2 class="section-header">Dataset Overview</h2>
+            <div class="dataset-info">
+                <div class="dataset-stat">
+                    <div class="dataset-number">760</div>
+                    <div class="dataset-label">Students</div>
+                </div>
+                <div class="dataset-stat">
+                    <div class="dataset-number">20</div>
+                    <div class="dataset-label">Features</div>
+                </div>
+                <div class="dataset-stat">
+                    <div class="dataset-number">3</div>
+                    <div class="dataset-label">Engineered Features</div>
+                </div>
+                <div class="dataset-stat">
+                    <div class="dataset-number">~35%</div>
+                    <div class="dataset-label">Predictive Importance</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technologies -->
+        <section class="content-section">
+            <h2 class="section-header">Technologies & Tools</h2>
+            <div class="tech-stack">
+                <span class="tech-tag">Python</span>
+                <span class="tech-tag">Scikit-learn</span>
+                <span class="tech-tag">Pandas</span>
+                <span class="tech-tag">NumPy</span>
+                <span class="tech-tag">Random Forest</span>
+                <span class="tech-tag">Gradient Boosting</span>
+                <span class="tech-tag">Feature Engineering</span>
+                <span class="tech-tag">Jupyter Notebooks</span>
+            </div>
+        </section>
+
+        <!-- Model Performance -->
+        <section class="content-section">
+            <h2 class="section-header">Model Performance Comparison</h2>
+            <!-- Added nuance on overall model generalization from ml_project.txt -->
+            <p class="content-text">All models exhibited negative Test R² values, indicating performance worse than a mean-based baseline, despite Random Forest showing overfitting with Training R² of 0.847.</p>
+            <div class="model-grid">
+                <div class="model-card">
+                    <h3 class="model-name">Linear Regression</h3>
+                    <div class="model-metrics">
+                        <div class="metric-row">
+                            <span class="metric-label">Test R²</span>
+                            <span class="metric-value negative">-0.073</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">MAE</span>
+                            <span class="metric-value">1.2</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Status</span>
+                            <span class="metric-value">Baseline</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-card">
+                    <h3 class="model-name">Random Forest</h3>
+                    <div class="model-metrics">
+                        <div class="metric-row">
+                            <span class="metric-label">Test R²</span>
+                            <span class="metric-value negative">-0.121</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Training R²</span>
+                            <span class="metric-value positive">0.847</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Status</span>
+                            <span class="metric-value negative">Overfitting</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="model-card">
+                    <h3 class="model-name">Ridge Regression</h3>
+                    <div class="model-metrics">
+                        <div class="metric-row">
+                            <span class="metric-label">Test R²</span>
+                            <span class="metric-value negative">-0.028</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">MAE</span>
+                            <span class="metric-value positive">1.16</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">Status</span>
+                            <span class="metric-value positive">Best Model</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Engineering -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Feature Engineering Approach</h2>
+                <p>
+                    Motivated by insights from exploratory data analysis, we constructed several high-level composite features to capture latent patterns not easily represented by raw variables:
+                </p>
+            </div>
+
+            <div class="code-block">
+                <span class="code-label">Python Implementation</span>
+                <pre><code># Engineered Features
+<span style="color: #3b82f6;">def</span> <span style="color: #10b981;">create_composite_features</span>(df):
+    # Stress Index: Aggregates stress-related factors
+    df['stress_index'] = (
+        df['academic_stress'] + 
+        df['time_pressure'] + 
+        df['anxiety_level']
+    ) / 3
+    
+    # Wellness Score: Combines positive lifestyle factors
+    df['wellness_score'] = (
+        df['sleep_hours'] * 0.3 + 
+        df['physical_activity'] * 0.3 + 
+        (10 - df['stress_level']) * 0.4
+    )
+    
+    # Academic-Social Imbalance
+    df['imbalance'] = abs(
+        df['study_hours'] - df['social_hours']
+    ) / df['study_hours'].mean()
+    
+    <span style="color: #3b82f6;">return</span> df</code></pre>
+            </div>
+        </section>
+
+        <!-- Feature Importance -->
+        <section class="content-section">
+            <h2 class="section-header">Top Feature Importance</h2>
+            <div class="chart-container">
+                <h3 class="chart-title">Most Predictive Features for GPA</h3>
+                <div class="feature-bar">
+                    <div class="feature-name">Wellness Score</div>
+                    <div class="feature-progress">
+                        <div class="feature-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+                <div class="feature-bar">
+                    <div class="feature-name">Academic-Social Imbalance</div>
+                    <div class="feature-progress">
+                        <div class="feature-fill" style="width: 72%;"></div>
+                    </div>
+                </div>
+                <div class="feature-bar">
+                    <div class="feature-name">Study Hours per Week</div>
+                    <div class="feature-progress">
+                        <div class="feature-fill" style="width: 68%;"></div>
+                    </div>
+                </div>
+                <div class="feature-bar">
+                    <div class="feature-name">Stress Index</div>
+                    <div class="feature-progress">
+                        <div class="feature-fill" style="width: 65%;"></div>
+                    </div>
+                </div>
+                <div class="feature-bar">
+                    <div class="feature-name">Sleep Duration</div>
+                    <div class="feature-progress">
+                        <div class="feature-fill" style="width: 58%;"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Added summary from ml_project.txt regarding feature importance as ~35% and nuance on model generalization -->
+            <p class="content-text"><em>Engineered features (Wellness Score, Academic-Social Imbalance, and Stress Index) accounted for approximately 35% of total predictive importance, highlighting their value despite limited model generalization.</em></p>
+        </section>
+
+        <!-- Key Findings -->
+        <section class="content-section">
+            <h2 class="section-header">Key Research Findings</h2>
+            
+            <div class="insight-card">
+                <h3 class="insight-title">📊 Engineered Features Dominate</h3>
+                <p class="insight-description">
+                    Our composite features (Wellness Score, Academic-Social Imbalance, and Stress Index) accounted for approximately 35% of total predictive importance, confirming that GPA outcomes are better described by high-level constructs than isolated behaviors.
+                </p>
+            </div>
+
+            <div class="insight-card">
+                <h3 class="insight-title">🎯 Less is More</h3>
+                <p class="insight-description">
+                    Models trained on a reduced set of five high-signal features consistently outperformed those using the full feature set. This aligns with the bias-variance tradeoff and reinforces the value of careful feature selection when working with small, noisy datasets.
+                </p>
+            </div>
+
+            <div class="insight-card">
+                <h3 class="insight-title">⚖️ Balance Matters</h3>
+                <p class="insight-description">
+                    Students with balanced routines (moderate study hours with adequate sleep and social support) outperformed peers with extreme study hours but poor health or social support, highlighting the importance of holistic well-being.
+                </p>
+            </div>
+        </section>
+
+        <!-- Methodology -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Research Methodology</h2>
+                
+                <h3>Data Preprocessing</h3>
+                <ul>
+                    <li>Removed records with missing target values and excessive null entries</li>
+                    <li>Applied one-hot encoding for categorical variables</li>
+                    <li>Standardized continuous variables to zero mean and unit variance</li>
+                    <li>Excluded open-ended text responses due to high variance</li>
+                </ul>
+
+                <h3>Model Development</h3>
+                <p>
+                    We implemented and compared several supervised learning algorithms:
+                </p>
+                <ul>
+                    <li><strong>Linear Regression:</strong> Baseline for interpretability and simplicity</li>
+                    <li><strong>Random Forest:</strong> Non-linear ensemble method for capturing interactions</li>
+                    <li><strong>Gradient Boosting:</strong> Iterative learning for complex patterns</li>
+                    <li><strong>Ridge/Lasso Regression:</strong> Regularized models to mitigate overfitting</li>
+                </ul>
+
+                <h3>Evaluation Strategy</h3>
+                <ul>
+                    <li>5-fold cross-validation for stable performance estimates</li>
+                    <li>Recursive feature elimination for optimal feature subset</li>
+                    <li>Grid search hyperparameter tuning</li>
+                    <li>Multiple metrics: MAE, RMSE, and R² score</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Challenges & Limitations -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Challenges & Limitations</h2>
+                <p>
+                    The difficulty in achieving high predictive accuracy is consistent with prior findings in educational and psychological research:
+                </p>
+                <ul>
+                    <li>Many important variables (instructor quality, coursework difficulty, motivation) were not available in the dataset</li>
+                    <li>Academic performance is influenced by complex, non-linear, and often stochastic factors</li>
+                    <li>Self-reported survey data introduces noise and potential bias</li>
+                    <li>Small dataset size limits model complexity and generalization</li>
+                </ul>
+                
+                <p>
+                    Despite these challenges, the identification of key contributing factors represents valuable progress, particularly when the goal is to inform interventions rather than make precise predictions.
+                </p>
+            </div>
+        </section>
+
+        <!-- Future Directions -->
+        <section class="content-section">
+            <div class="content-text">
+                <h2>Implications & Future Work</h2>
+                <p>
+                    Although predictive power was limited, the project produced several actionable insights:
+                </p>
+                <ul>
+                    <li>Early screening tools based on engineered features could identify at-risk students</li>
+                    <li>Shift toward classification (low/medium/high risk tiers) may improve utility</li>
+                    <li>Integration with real-time academic data could enhance predictions</li>
+                    <li>Focus on intervention strategies rather than precise GPA prediction</li>
+                </ul>
+                
+                <p>
+                    The consistent importance of holistic wellness and lifestyle balance points to promising directions for student support services and educational policy development.
+                </p>
+            </div>
+        </section>
+
+        <!-- References -->
+        <section class="content-section">
+            <div class="insight-card">
+                <h3 class="insight-title">📚 Data Source</h3>
+                <p class="insight-description">
+                    Salah Uddin Ahmed Shuvo. (2023) Student Mental Stress and Coping Mechanisms. 
+                    Kaggle Dataset. Accessed April 24, 2025.
+                </p>
+            </div>
         </section>
     </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Alexander Osborne. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for back link
+        document.querySelector('.back-link').addEventListener('click', function(e) {
+            if (this.getAttribute('href').startsWith('#')) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.pageYOffset > 0) {
+                nav.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.3)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
+
+        // Animate feature bars on scroll
+        const observerOptions = {
+            threshold: 0.5,
+            rootMargin: '0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bars = entry.target.querySelectorAll('.feature-fill');
+                    bars.forEach((bar, index) => {
+                        setTimeout(() => {
+                            bar.style.width = bar.getAttribute('style').match(/width:\s*(\d+%)/)[1];
+                        }, index * 100);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.chart-container').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Animate dataset numbers
+        const animateValue = (element, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                element.textContent = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+
+        const datasetObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const numbers = entry.target.querySelectorAll('.dataset-number');
+                    numbers.forEach(num => {
+                        const value = num.textContent;
+                        if (!isNaN(value)) {
+                            animateValue(num, 0, parseInt(value), 1000);
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.dataset-info').forEach(el => {
+            datasetObserver.observe(el);
+        });
+    </script>
 </body>
 </html>
